@@ -12,3 +12,13 @@ available only for Thane district of Maharashtra. We have another options by whi
 - Our tool can generate the details statistics of the whole configuration.
 
 ## To Setup
+- Install Matlab
+- Install apache2 
+  - sudo apt-get install apache2
+- Install php 
+  - sudo apt-get install php5
+- Install mysql 
+  - sudo apt-get install mysqlclient mysqlserver
+- Build ns3 project 
+  - ./waf configure
+  - ./waf build
