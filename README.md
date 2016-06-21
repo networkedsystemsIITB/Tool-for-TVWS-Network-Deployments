@@ -10,4 +10,5 @@ available only for Thane district of Maharashtra. We have another options by whi
 - We design the tool for both TDMA and CSMA MAC protocol. User have the option to configure different MAC protocol specific parameters.
 - Our tool can automatically place intermediate node to create a single connected network by all BS together.
 - Our tool can generate the details statistics of the whole configuration.
-## To Setup:
+
+## To Setup
