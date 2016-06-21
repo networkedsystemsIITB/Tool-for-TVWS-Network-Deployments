@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <title>TVWS</title>
+    <meta charset='utf-8' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta content='' name='description' />
+    <meta content='' name='author' />
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/custom.css"/>
+    <link rel="icon" href="2.png">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js">
+       
+    </script>
+    <script type="text/javascript" src="js/map.js"></script>
+    <script type="text/javascript">
+      function show_simulation() { document.getElementById("simulation_area").style.display = 'block'; }
+    
+      function show_tdma() { document.getElementById("channel_area").style.display = 'block';
+      
+                             document.getElementById("tdma_area1").style.display = 'block';
+                             
+                             document.getElementById("tdma_area2").style.display = 'block';
+                             
+                             document.getElementById("tdma_area3").style.display = 'block';
+                             
+                             document.getElementById("tdma_area4").style.display = 'block';
+                             
+                             document.getElementById("tdma_area5").style.display = 'block'; }
+                             
+      function show_csma() { document.getElementById("csma_area").style.display = 'block'; }
+      
+      function show_format()
+      {
+        if (document.getElementById('file_upload').checked)
+        {
+          document.getElementById('ifYes').style.display = 'block';
+          document.getElementById("upload_area").style.display = 'block';
+        }
+        
+        else document.getElementById('ifYes').style.display = 'none';  
+      }
+      
+      function hide_format()
+      {
+        if (document.getElementById('simulation').checked)
+        {
+          document.getElementById('ifYes').style.display = 'none';
+          document.getElementById("upload_area").style.display = 'none';
+        }
+        
+        else document.getElementById('ifYes').style.display = 'none';
+      }
+    </script>  
+        
+  </head>
+  <body>  
+    <div class='navbar navbar-default navbar-static-top'>
+      <div class='container-fluid'>
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+         <img src="images/1.png" alt="HTML5 Icon" width="330" height="38"> <a class='navbar-brand' href='index_test.html'/><font color="black"><b></b></font></a>
+         <img src="images/logo.gif" alt="HTML5 Icon" width="50" height="50"> <a class='navbar-brand' href='index_test.html'/><font color="black"><b></b></font></a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class='active'><a href="index_test.html">Home</a></li>
+            <li><a href="readme.html">Readme</a></li>
+            <li><a href="output.php">Output Section</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contacts.html">Contacts</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <form action="index_test1.php" method="post" autocomplete="off" enctype="multipart/form-data">
+    
+    <div class='container-fluid'>
+      <div class='row'>
+        <div class='col-md-4'>
+         
+          <div class='well'>
+          
+            <div id="simulation_area" style="display: block;">
+            <h4>
+              Select Location <small>(<a id='find_me' href='#'>find me</a>)</small>
+            </h4>
+            </div>
+          
+            <p>
+            <input class='form-control' id='search_address' name="location" placeholder='Search the Location' type='text'/>
+            </p>
+            
+            <div class='row'>
+            <ul>
+            Range (kms):
+            <label>
+            <input class='form-control' id='range' name="range" placeholder="Range (kms)" type='text' value="200" style="width: 50px; height: 20px" />
+            </label>
+            </ul>
+            </div>
+          
+    
+            <h4>
+              Select BS Information
+            </h4>
+            <h5><a href="readme.html">(more details)</a></h5>
+          
+          <div class='row'>
+          <ul>
+          <input type="radio" onclick="javascript:show_format();" name="choice" id="file_upload" value="file_upload" onclick="show_upload();">&nbsp;Import Raw Data&nbsp;
+          <input type="radio" onclick="javascript:hide_format();" name="choice" id="simulation" value="simulation" onclick="show_simulation();"> Auto Pick Position of BS&nbsp;
+          </ul>
+          </div>
+
+
+
+
+
+       
+
+
+        
+          <div class="row" id="ifYes" style="display:none">
+          <ul>
+
+
+          <script>
+          $(document).ready(function () {
+             $('span').on('mouseenter', function () {
+                 $('#test').show();
+                 $(this).css({
+                     "text-decoration": "underline"
+                 });
+             }).on('mouseleave', function () {
+                 $('#test').hide();
+                 $(this).css({
+                     "text-decoration": ''
+                 });
+             });;
+          });
+        </script>
+
+        <img id="test" src="raw_data.png"/> <span>Format of Raw Data</span>
+
+<!-- <style type="text/css">
+.myTable { width:100px;background-color:#eff;border-collapse:collapse; }
+.myTable th { background-color:#A0CFEC;color:white;width:40%; }
+.myTable td, .myTable th { padding:5px;border:1px solid #040; }
+</style> -->
+<!-- End Styles -->
+<!-- <table class="myTable">
+<tr>
+<th colspan=4 ><center>BS Position</center></th><th rowspan=2>Population</th><th rowspan=2> Th/User</th>
+</tr>
+
+<tr>
+<th >Place</th><th>Lat</th><th>Lon</th><th>Alti</th>
+</tr>
+
+<tr>
+<td>Ase</td><td>7831</td><td>20.009</td><td>73.56</td><td>862</td><td>0.5</td>
+</tr>
+<tr>
+<td>Pali</td><td>281</td><td>16.361</td><td>74.57</td><td>711</td><td>0.2</td>
+</tr>
+</table> -->
+
+          <label>
+          </label>
+          </ul>
+          </div>
+          
+        <div class='row'>
+				<ul>
+				<div id="upload_area" style="display: none;"> 
+				
+        <div>
+          <!--<form method="post" action="upload_test.php" enctype="multipart/form-data">-->
+          <input type="file" name="upload" id="upload"> Select file of BS info to upload(.csv):<br />
+          <!--<input type="submit" name="submit" />-->
+        </div>
+        
+				</ul>
+				</div>
+        
+        
+        <!--<div class='row'>
+        <ul>
+        <div id="simulation_area" style="display: none;">
+        <label>
+        <h4>
+          Select Location <small>(<a id='find_me' href='#'>find me</a>)</small>
+        </h4>
+        </label>
+        </ul>
+        </div>-->
+        
+        
+        <!--<div class='row'>
+        <ul>
+        <div id="simulation_area" style="display: none;"> 
+        <label>
+        <div> 
+          <input type="hidden" name="action" value="upload"/> 
+                <input type="submit" value="Submit"/> 
+              </div> 
+            </form>
+          <input type="hidden" name="upload_select_value" id="upload_select_value_hidden">
+          </label>
+          </ul>
+          </div>    -->
+            
+         <!--   <p>
+              <input class='form-control' id='search_address' name="location" placeholder='Enter an address or an intersection' type='text' />
+            </p>-->
+            
+             
+               <!-- within-->
+                <select id='search_radius' style="display:none;">
+                  <option value='400'>2 blocks</option>
+                  <option value='805'>1/2 mile</option>
+                  <option value='1610'>1 mile</option>
+                  <option value='3220'>2 miles</option>
+                </select>
+              
+            
+            
+            <h4>Theoretical Throughput Calculation
+             </h4><h5><a href="readme.html">(more details)</a></h5>
+            
+            <div class='row'>
+            <ul>
+            Receiver Sensitivity (dBm):
+            <label>
+            <input class='form-control' id='text_search' name="rx_sensitivity" placeholder="Receiver Sensitivity (dBm)" type='text' value="-95" style="width: 50px; height: 20px" />
+            </label>
+            </ul>
+            </div>
+            
+            <div class='row'>
+            <ul>
+            Transmit Power (dBm):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label>
+            <input class='form-control' id='text_search' name="transmit_power" placeholder="Transmit Power (dBm)" type='text' value="36" style="width: 50px; height: 20px" />
+            </label>
+            </ul>
+            </div>
+
+            <div class='row'>
+            <ul>
+            TVWS Frequency(MHz):&nbsp;&nbsp;&nbsp;&nbsp;
+            <label>
+            <input class='form-control' id='text_search' name="frequency" placeholder="Frequency(MHz)" type='text' value="470" style="width: 50px; height: 20px" />
+            </label>
+            </ul>
+            </div>
+
+            <div class='row'>
+            <ul>
+            TVWS Channel Number:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label>
+            <select id="channel_options" name="channel_options">
+            <option value='1'>1</option>
+            <option value='1'>1</option>
+            <option value='2'>2</option>
+            <option value='3'>3</option>
+            <option value='4'>4</option>
+            <option value='5'>5</option>
+            <option value='6'>6</option>
+            <option value='7'>7</option>
+            <option value='8'>8</option>
+            <option value='9'>9</option>
+            <option value='10'>10</option>
+            <option value='11'>11</option>
+            <option value='12'>12</option>
+            <option value='13'>13</option>
+            <option value='14'>14</option>
+            <option value='15'>15</option>
+            <option value='16'>16</option>
+            </select>
+            </label>
+            </ul>
+            </div>
+
+            <div class='row'>
+            <ul>
+            Channel Width(MHz):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label>
+            <input class='form-control' id='text_search' name="width" placeholder="Width(MHz)" type='text' value="8" style="width: 50px; height: 20px" />
+            </label>
+            </ul>
+            </div>
+
+
+           <!--  <input type="submit" name="submit" /> -->
+            <input type="submit" name="submit" value="Run Theoretical Model" id="submit" />
+            <!--<div class='row'>
+            <ul>
+            Simulation Time (s):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label>
+            <input class='form-control' id='text_search' name="simulation_time" placeholder="Simulation Time (s)" type='text' value="30" style="width: 50px; height: 20px" />
+            </label>
+            </ul>
+            </div>-->
+            
+            <!--<h4>MAC Protocol Specifications</h4>
+
+            <div class='row'>
+            <ul>
+            <label>
+            TDMA&nbsp;&nbsp;<input type="radio" name="compare" value="tdma" onclick="show_tdma();">&nbsp; &nbsp; &nbsp; &nbsp;
+            CSMA&nbsp;&nbsp;<input type="radio" name="compare" value="csma" onclick="show_csma();">
+            </label>
+            </ul>
+            </div>
+            
+            <div class='row'>
+            <ul>
+            <div id="channel_area" style="display: none;"> 
+            <label>
+            <select id="channel_options" name="channel_options">
+              <option value=''>Channel Number</option>
+              <option value='1'>1</option>
+              <option value='2'>2</option>
+              <option value='3'>3</option>
+              <option value='4'>4</option>
+              <option value='5'>5</option>
+              <option value='6'>6</option>
+              <option value='7'>7</option>
+              <option value='8'>8</option>
+              <option value='9'>9</option>
+              <option value='10'>10</option>
+              <option value='11'>11</option>
+              <option value='12'>12</option>
+            </select>
+            <input type="hidden" name="channel_select_value" id="channel_select_value_hidden">
+            </label>
+            </ul>
+            </div>
+            
+						<div class='row'>
+            <ul>
+            <div id="tdma_area1" style="display: none;">Slot Time (ms):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label>
+            <input class="form-control" id="tdma_tb1" name="slot_time" placeholder="Slot Time (ms)" type="text" value="20000" style="width: 50px; height: 20px" /></div>
+            </label>
+            </ul>
+            </div>
+						
+						<div class='row'>
+            <ul>
+            <div id="tdma_area2" style="display: none;">Guard Interval (us):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label>
+            <input class="form-control" id="tdma_tb2" name="guard_interval" placeholder="Guard Interval (us)" type="text" value="100" style="width: 50px; height: 20px" /></div>
+            </label>
+            </ul>
+            </div>
+						
+						<div class='row'>
+            <ul>
+            <div id="tdma_area3" style="display: none;">Interframe Space (ns):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label>
+            <input class="form-control" id="tdma_tb3" name="ifs" placeholder="Interframe Space (ns)" type="text" value="0" style="width: 50px; height: 20px" /></div>
+            </label>
+            </ul>
+            </div>
+            
+            <div class='row'>
+            <ul>
+            <div id="tdma_area4" style="display: none;">Channel Width (MHz):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label>
+            <input class="form-control" id="tdma_tb4" name="width" placeholder="Channel Width (MHz)" type="text" value="8" style="width: 50px; height: 20px" /></div>
+            </label>
+            </ul>
+            </div>
+						
+						<div class='row'>
+            <ul>
+            <div id="tdma_area5" style="display: none;">Central Frequency (MHz):
+            <label>
+            <input class="form-control" id="tdma_tb5" name="central_freq" placeholder="Central Frequency (MHz)" type="text" value="475" style="width: 50px; height: 20px" /></div>
+            </label>
+            </ul>
+            </div>
+						
+					  <div class='row'>
+					  <ul>
+						<div id="csma_area" style="display: none;"> 
+						<label>
+						<select id="csma_options" name="csma_options">
+						  <option id="csma_dl1" value="whitespace" />White Space</option></div>
+						  <option id="csma_dl2" value="2.4ghz" />2.4 GHz</option></div>
+						  <option id="csma_dl3" value="5ghz" />5 GHz</option></div>	
+            </select>
+            <input type="hidden" name="csma_select_value" id="csma_select_value_hidden">
+						</label>
+						</ul>
+						</div>-->
+            
+            <!--<input type="submit" name="run" value="Run">-->
+            <!-- <p>
+            <div class='alert alert-info' id='result_box' >Simulation is On</strong></div> -->
+          </div> <!--well-->
+
+        </div> <!--class='col-md-4'-->
+        
+        <div class='col-md-8'>
+          <noscript>
+            <div class='alert alert-info'>
+              <h4>Your JavaScript is disabled</h4>
+              <p>Please enable JavaScript to view the map.</p>
+            </div>
+          </noscript>
+          <div id='map_canvas'></div>
+          <p class='pull-right'>
+            
+        </p>
+        </div>
+        <p align="right"> <a href='http://derekeder.com/searchable_map_template/'>Searchable Map Template</a> 
+by <a href='http://derekeder.com'>Derek Eder</a></p>
+      </div>
+
+    </div>
+    </form>
+
+    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery.address.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&libraries=places"></script>
+    <script type="text/javascript" src="js/maps_lib.js"></script>
+    <script type='text/javascript'>
+
+      /*$(document).ready(function() {
+        $("#channel_options").change(function(){
+          $("#channel_select_value_hidden").val(("#channel_options").find(":selected").text());
+        });
+      });
+
+		  $(document).ready(function() {
+				$("#csma_options").change(function(){
+					$("#csma_select_value_hidden").val(("#csma_options").find(":selected").text());
+				});
+			});*/
+
+        $(window).resize(function () {
+          var h = $(window).height(),
+            offsetTop = 105; // Calculate the top offset
+        
+          $('#map_canvas').css('height', (h - offsetTop));
+        }).resize();
+        
+        $(function() {
+          var myMap = new MapsLib({
+            fusionTableId:      "1m4Ez9xyTGfY2CU6O-UgEcPzlS0rnzLU93e4Faa0",
+            googleApiKey:       "AIzaSyA3FQFrNr5W2OEVmuENqhb2MBB2JabdaOY",
+            locationColumn:     "geometry",
+            map_center:         [19, 73],
+            locationScope:      "india"
+          });
+          
+          var autocomplete = new google.maps.places.Autocomplete(document.getElementById('search_address'));
+      
+          $(':checkbox').click(function(){
+            myMap.doSearch();
+          });
+
+          $(':radio').click(function(){
+            myMap.doSearch();
+          });
+          
+          $('#search_radius').change(function(){
+            myMap.doSearch();
+          });
+          
+          $('#search').click(function(){
+            myMap.doSearch();
+          });
+          
+          $('#find_me').click(function(){
+            myMap.findMe(); 
+            return false;
+          });
+          
+          $('#reset').click(function(){
+            myMap.reset(); 
+            return false;
+          });
+          
+          $(":text").keydown(function(e){
+              var key =  e.keyCode ? e.keyCode : e.which;
+              if(key === 13) {
+                  $('#search').click();
+                  return false;
+              }
+          });
+        });
+      //]]>
+    </script>
+   
+  </body>
+</html>

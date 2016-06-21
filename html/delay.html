@@ -1,0 +1,68 @@
+<html>
+<head>
+<title>GPS Tracker</title>
+<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="view/style.css">
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false">/script>
+<script type="text/javascript">
+function show_maps()
+{
+var div_peta = document.getElementById('kanvas');
+var tengah = new google.maps.LatLng(-8.801502,115.174794);
+var options = 
+{
+center : tengah,
+zoom : 14,
+mapTypeId : google.maps.MapTypeId.ROADMAP
+}
+//make map object
+var google_map = new google.maps.Map(div_peta,options);
+}
+</script>
+</head>
+<body OnLoad="show_maps();">
+<div class="container">
+<div class="row">
+<div class="col-md-4">
+<div class="panel panel-default panel-body">
+<p><b><h4>Tracking</h4></b>
+<hr>
+<?php
+include"controller/connection.php";
+$query=mysql_query("SELECT id_history FROM tb_history");
+$count=mysql_num_rows($query);
+?>
+<form method="POST" action="<?=$_SERVER['PHP_SELF']?>">
+<input type="hidden" name="count" value="<?php echo $count ?>">
+<input type="submit" name="submit" class="btn btn-primary" value="Get Location" style="width:280px"> </button></a></p>
+</form>
+</div>
+</div>
+<div class="col-md-8">
+<div class="panel panel-default panel-body" style="height:490px">
+<div id="kanvas"> kanvas peta</div>
+</div>
+</div>
+</div>
+<?php
+if(isset($_POST['submit']))
+{
+include "controller/connection.php";
+$count1 = $_POST['count']; 
+$count2 = $count1+1;
+$sql = mysql_query("SELECT id_history FROM tb_history");
+$count3 = mysql_num_rows($sql);
+if($count3==$count1)
+{
+echo"<script>setTimeout(show_maps,1000)</script>";  
+}
+else if
+{
+echo"<script type='text/javascript'>
+alert('Data has been added!');
+</script>";
+}
+}
+?>
+</body>
+</html>

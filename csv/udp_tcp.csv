@@ -1,0 +1,2 @@
+ cut -d, -f16,17 final_ns3_res_tcp.csv >tcp.csv
+ paste -d',' final_ns3_res.csv tcp.csv >csv/final_ns3_res_merge_udp_tcp.csv

@@ -1,0 +1,142 @@
+sudo /etc/init.d/mysql start
+/var/lib/mysql
+# delete duplicate from Thane_place_pop_lat_long_alt_bw_range_cap.csv
+# delete the file Thane_place_pop_lat_long_alt_bw_range_cap.csv from /var/lib/mysql/Thane
+
+sudo cp /var/www/html/GUI/csv/Thane_place_pop_lat_long_alt_bw_range_cap.csv ./Thane/
+
+awk -F, -vOFS=, '{NF-=2;print}' Thane_place_pop_lat_long_alt_bw_range_cap.csv > Thane_place_pop_lat_long_alt_bw.csv
+
+delete the file Thane_place_pop_lat_long_alt_bw.csv from /var/lib/mysql/Thane
+
+sudo cp /var/www/html/GUI/csv/Thane_place_pop_lat_long_alt_bw.csv ./Thane/
+
+
+# mysql
+
+use Thane;
+
+alter table Places_Within_Range drop Aggregate_People_In_Range;
+alter table Places_Within_Range drop Utility_Value;
+
+delete from Sorted_Range_Cap_Data;
+ LOAD DATA INFILE 'Thane_place_pop_lat_long_alt_bw_range_cap.csv' INTO TABLE Sorted_Range_Cap_Data FIELDS TERMINATED BY ','  ENCLOSED BY '"' 
+LINES TERMINATED BY '\n';
+
+delete from Lat_Long_Data;
+
+LOAD DATA INFILE 'Thane_place_pop_lat_long_alt_bw.csv' INTO TABLE Lat_Long_Data FIELDS TERMINATED BY ','  ENCLOSED BY '"'  LINES TERMINATED BY '\n';
+
+# delete the view Within_Range1
+# delete all the table data from Sorted_Range_Cap_Data
+# delete all the table data from Lat_Long_Data
+
+
+drop view Within_Range1;
+
+CREATE VIEW Within_Range1 AS (
+SELECT Place, Coverage, Capacity/1000000, Place_Name, (
+       6371 * acos (
+       cos ( radians(Latitude) )
+       * cos( radians(Lat_Point) )
+       * cos( radians(Long_Point) - radians(Longitude) )
+       + sin ( radians(Latitude) )
+       * sin( radians(Lat_Point) )
+       )
+       ) AS Distance, Population_Number
+FROM `Thane`.`Sorted_Range_Cap_Data`, `Thane`.`Lat_Long_Data`
+WHERE (
+      6371 * acos (
+      cos ( radians(Latitude) )
+      * cos( radians(Lat_Point) )
+      * cos( radians(Long_Point) - radians(Longitude) )
+      + sin ( radians(Latitude) )
+      * sin( radians(Lat_Point) )
+    )
+  ) < SQRT(Coverage/3.141)
+ORDER BY Coverage DESC, Distance);
+
+# delete the file Within_Range.csv from /var/lib/mysql/Thane
+SELECT * INTO OUTFILE 'Within_Range1.csv' FIELDS TERMINATED BY ', ' LINES TERMINATED BY '\n' FROM Within_Range1;
+
+# delete table data from Places_Within_Range
+
+delete from Places_Within_Range;
+
+LOAD DATA INFILE 'Within_Range1.csv' INTO TABLE Places_Within_Range
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"' 
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+
+select From_Place, Coverage_Range, Capacity_Mbps, sum(People_Count) AS Number_of_People, Capacity_Mbps/(sum(People_Count)/10/2) AS Utility_Value from Places_Within_Range group by From_Place order by Utility_Value desc;
+
+select * from Places_Within_Range ORDER BY Coverage_Range desc, Distance_Length asc;
+
+drop view NewView;
+
+create view NewView as
+(select From_Place, Coverage_Range, Capacity_Mbps, sum(People_Count) AS Number_of_People, Capacity_Mbps/(sum(People_Count)/10/2) AS Utility_Value from Places_Within_Range group by From_Place order by Utility_Value desc);
+
+# deleet New_View.csv 
+
+SELECT * INTO OUTFILE 'New_View.csv' FIELDS TERMINATED BY ', ' LINES TERMINATED BY '\n' FROM NewView;
+
+
+
+alter table Places_Within_Range add Aggregate_People_In_Range int;
+
+update Places_Within_Range join NewView on Places_Within_Range.From_Place = NewView.From_Place
+set Aggregate_People_In_Range = Number_of_People
+where Places_Within_Range.From_Place = NewView.From_Place;
+
+# delete Places_Within_Range.csv
+
+SELECT * INTO OUTFILE 'Places_Within_Range.csv' FIELDS TERMINATED BY ', ' LINES TERMINATED BY '\n' FROM Places_Within_Range;
+
+alter table Places_Within_Range add Utility_Value float;
+update Places_Within_Range join NewView on Places_Within_Range.From_Place = NewView.From_Place
+set Places_Within_Range.Utility_Value = NewView.Utility_Value
+where Places_Within_Range.From_Place = NewView.From_Place;
+
+# delete Places_Within_Range_UV.csv
+
+SELECT * INTO OUTFILE 'Places_Within_Range_UV.csv' FIELDS TERMINATED BY ', ' LINES TERMINATED BY '\n' FROM Places_Within_Range ORDER BY Utility_Value desc, Coverage_Range desc, Distance_Length asc;
+
+SELECT *, MIN(Distance_Length) AS Minimum_Distance
+FROM Places_Within_Range
+GROUP BY To_Place
+ORDER BY Utility_Value desc, Coverage_Range desc, Distance_Length asc;
+
+#deleet Places_Within_Range_UV_Unique.csv
+
+SELECT *, MIN(Distance_Length) AS Minimum_Distance INTO OUTFILE 'Places_Within_Range_UV_Unique.csv' FIELDS TERMINATED BY ', ' LINES TERMINATED BY '\n' FROM Places_Within_Range GROUP BY To_Place ORDER BY Utility_Value desc, Coverage_Range desc, Distance_Length asc;
+
+drop view checkdup;
+
+Create view checkdup as
+(SELECT *, MIN(Distance_Length) AS Minimum_Distance
+FROM Places_Within_Range
+GROUP BY To_Place
+ORDER BY Utility_Value desc, Coverage_Range desc, Distance_Length asc);
+
+SELECT To_Place, COUNT(To_Place) AS NumOccurrences
+FROM checkdup
+GROUP BY To_Place
+HAVING ( COUNT(To_Place) > 1 );
+
+select distinct(PLACE_NAME), LAT_POINT, LONG_POINT, ALT_LEVEL, COVERAGE_RANGE, CAPACITY_MBPS, AGGREGATE_PEOPLE_IN_RANGE, UTILITY_VALUE
+from Lat_Long_Data, checkdup
+where Lat_Long_Data.Place_Name = checkdup.From_Place
+order by Utility_Value desc, Coverage_Range desc;
+
+#delete Plot_Lat_Long.csv
+
+SELECT distinct(PLACE_NAME), LAT_POINT, LONG_POINT, ALT_LEVEL, COVERAGE_RANGE, CAPACITY_MBPS, AGGREGATE_PEOPLE_IN_RANGE, UTILITY_VALUE INTO OUTFILE 'Plot_Lat_Long.csv' FIELDS TERMINATED BY ', ' LINES TERMINATED BY '\n' FROM Lat_Long_Data, checkdup WHERE Lat_Long_Data.Place_Name = checkdup.From_Place ORDER BY Utility_Value desc, Coverage_Range desc;
+
+
+
+SELECT distinct(PLACE_NAME), AGGREGATE_PEOPLE_IN_RANGE, LAT_POINT, LONG_POINT, ALT_LEVEL, COVERAGE_RANGE, CAPACITY_MBPS, UTILITY_VALUE INTO OUTFILE 'Plot_Lat_Long.csv' FIELDS TERMINATED BY ', ' LINES TERMINATED BY '\n' FROM Lat_Long_Data, checkdup WHERE Lat_Long_Data.Place_Name = checkdup.From_Place ORDER BY Utility_Value desc, Coverage_Range desc;
+
+
+
